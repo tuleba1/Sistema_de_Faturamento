@@ -4,10 +4,47 @@
  */
 package br.com.sistema.service;
 
+import br.com.sistema.dao.FaturaDAO;
+import br.com.sistema.model.Calculavel;
+import br.com.sistema.model.Fatura;
+import java.util.List;
+
 /**
  *
  * @author tulio
  */
 public class FaturaService {
+    private FaturaDAO faturaDAO;
+    
+    public FaturaService (FaturaDAO faturaDAO){
+        this.faturaDAO = faturaDAO;
+    }
+    
+    public void criar (Fatura fatura){
+        faturaDAO.salvar(fatura);
+    }
+    
+    public Fatura buscar(int numero){
+        return faturaDAO.buscarPorNumero(numero);
+    }
+    
+    public List<Fatura> listar(){
+        return faturaDAO.listarTodas();
+    }
+    
+    public boolean remover(int numero){
+        return faturaDAO.remover(numero);
+    }
+    
+    public void adicionarItem(int numero, Calculavel item){
+        Fatura f = faturaDAO.buscarPorNumero(numero);
+        if  (f != null){
+            f.adicionarItem(item);
+        }
+    }
+   
     
 }
+
+    
+

@@ -1,87 +1,62 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package br.com.sistema.view;
-
-import br.com.sistema.dao.ClienteDAO;
-import br.com.sistema.dao.ClienteDAOArrayList;
-import br.com.sistema.model.Cliente;
-import java.time.LocalDate;
+import br.com.sistema.controller.FaturaController;
+import br.com.sistema.dao.FaturaDAOArrayList;
+import br.com.sistema.dao.ItemDAOArrayList;
+import br.com.sistema.model.Item;
+import br.com.sistema.model.Fatura;
+import br.com.sistema.service.FaturaService;
+import br.com.sistema.service.ItemService;
 
 public class Main {
-
     public static void main(String[] args) {
 
+        // Instanciar os DAOs
+        ItemDAOArrayList itemDAO = new ItemDAOArrayList();
+        FaturaDAOArrayList faturaDAO = new FaturaDAOArrayList();
+
+        // Instanciar os Services
+        ItemService itemService = new ItemService(itemDAO);
+        FaturaService faturaService = new FaturaService(faturaDAO);
+
+        // Instanciar o Controller
+        FaturaController faturaController = new FaturaController(faturaService);
+
         try {
-            // Instanciando o DAO
-            ClienteDAO clienteDAO = new ClienteDAOArrayList();
+            // Criando itens
+            Item item1 = new Item("Mouse Gamer", 150.0, 2);
+            Item item2 = new Item("Teclado Mecânico", 300.0, 1);
+            Item item3 = new Item("Headset", 250.0, 1);
 
-            // Criando 3 clientes
-            Cliente c1 = new Cliente(
-                    1,
-                    "João Silva",
-                    "joao@gmail.com",
-                    "Rua A, 123",
-                    "SP",
-                    "Brasil",
-                    LocalDate.of(1990, 5, 11)
-            );
+            itemService.criar(item1);
+            itemService.criar(item2);
+            itemService.criar(item3);
 
-            Cliente c2 = new Cliente(
-                    2,
-                    "Maria Souza",
-                    "maria@gmail.com",
-                    "Av. Central, 500",
-                    "RJ",
-                    "Brasil",
-                    LocalDate.of(1985, 10, 3)
-            );
+            System.out.println("Itens cadastrados:");
+            itemService.listar().forEach(System.out::println);
+            System.out.println("-----------------------------------");
 
-            Cliente c3 = new Cliente(
-                    3,
-                    "Carlos Lima",
-                    "carlos@hotmail.com",
-                    "Rua das Flores, 88",
-                    "MG",
-                    "Brasil",
-                    LocalDate.of(2000, 2, 20)
-            );
+            // Criar Fatura nº 1001
+            faturaController.criarFatura(1001);
 
-            // Validando
-            c1.validar();
-            c2.validar();
-            c3.validar();
+            // Adicionar itens à fatura
+            faturaController.adicionarItemNaFatura(1001, item1); // Mouse (2x)
+            faturaController.adicionarItemNaFatura(1001, item2); // Teclado
+            faturaController.adicionarItemNaFatura(1001, item3); // Headset
 
-            // Salvando no DAO
-            clienteDAO.salvar(c1);
-            clienteDAO.salvar(c2);
-            clienteDAO.salvar(c3);
+            // Exibir total da fatura
+            double total = faturaController.calcularTotal(1001);
+            System.out.println("Total Fatura 1001: R$ " + total);
+            System.out.println("-----------------------------------");
 
-            // Listando todos
-            System.out.println("=== LISTA INICIAL ===");
-            clienteDAO.listarTodos().forEach(System.out::println);
+            // Criar outra fatura 1002
+            faturaController.criarFatura(1002);
+            faturaController.adicionarItemNaFatura(1002, item3); // Headset
 
-            // Buscando cliente por ID
-            System.out.println("\n=== BUSCANDO ID 2 ===");
-            Cliente buscado = clienteDAO.buscarPorId(2);
-            System.out.println(buscado);
-
-            // Atualizando cliente 3
-            System.out.println("\n=== ATUALIZANDO CLIENTE 3 ===");
-            c3.setNome("Carlos Eduardo Lima");
-            clienteDAO.atualizar(c3);
-
-            // Exibindo lista após atualização
-            clienteDAO.listarTodos().forEach(System.out::println);
-
-            // Deletando cliente 1
-            System.out.println("\n=== DELETANDO CLIENTE 1 ===");
-            clienteDAO.deletar(1);
-
-            // Exibindo final
-            System.out.println("\n=== LISTA FINAL ===");
-            clienteDAO.listarTodos().forEach(System.out::println);
+            // Exibir todas as faturas
+            System.out.println("Lista de faturas:");
+            for (Fatura f : faturaController.listarFaturas()) {
+                System.out.println("Fatura Nº " + f.getNumero() + 
+                                   " | Total: R$ " + f.calcularTotal());
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
