@@ -12,39 +12,48 @@ import java.util.List;
  * @author tulio
  */
 public class Fatura implements Calculavel {
-    private int numero; 
-    private List<Item> itens = new ArrayList<>();
+    private int numero;
     private Cliente cliente;
-    
-    public Fatura(int numero){
+    private int mes;
+    private int ano;
+
+    private List<Calculavel> itens = new ArrayList<>();
+
+    public Fatura(int numero, Cliente cliente, int mes, int ano) {
         this.numero = numero;
         this.cliente = cliente;
+        this.mes = mes;
+        this.ano = ano;
     }
 
-    public Fatura(int numero, Cliente cliente) {
-        throw new UnsupportedOperationException("Sem suporte"); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-    
-    public void adicionarItem(Item item){
+    public void adicionarItem(Calculavel item) {
         itens.add(item);
     }
-    
+
     @Override
-    public double calcularTotal(){
+    public double calcularTotal() {
         return itens.stream()
                 .mapToDouble(Calculavel::calcularTotal)
                 .sum();
     }
-    
-    public int getNumero(){
+
+    public int getNumero() {
         return numero;
     }
-    
-    public List<Item> getItens() {
-    return itens;
-}
-    
-    public Cliente getCliente(){
+
+    public Cliente getCliente() {
         return cliente;
+    }
+
+    public int getMes() {
+        return mes;
+    }
+
+    public int getAno() {
+        return ano;
+    }
+
+    public List<Calculavel> getItens() {
+        return itens;
     }
 }

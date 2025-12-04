@@ -47,12 +47,6 @@ public class FaturaService {
             f.adicionarItem((Item) item);
         }
     }
-
-    public void criar(Fatura fatura) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-   
-    
 }
 
     

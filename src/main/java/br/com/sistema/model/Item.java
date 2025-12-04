@@ -17,7 +17,11 @@ public class Item extends EntidadeBase implements Calculavel {
     private double preco;
     private int quantidade;
 
-    public Item(String nome, double preco, int quantidade) {}
+  public Item(String nome, int quantidade, double preco) {
+        this.nome = nome;
+        this.quantidade = quantidade;
+        this.preco = preco;
+    }
 
     public Item(int id, String nome, double preco, int quantidade) {
         this.setId(id);
@@ -36,15 +40,15 @@ public class Item extends EntidadeBase implements Calculavel {
         if (nome == null || nome.isBlank()) {
             throw new CampoInvalidoException("Nome do item é obrigatório.");
         }
-        if (preco < 0) {
-            throw new CampoInvalidoException("Preço do item não pode ser negativo.");
+        if (quantidade <= 0) {
+            throw new CampoInvalidoException("A quantidade deve ser maior que zero.");
         }
-        if (quantidade < 0) {
-            throw new CampoInvalidoException("Quantidade não pode ser negativa.");
+        if (preco <= 0) {
+            throw new CampoInvalidoException("O preço deve ser maior que zero.");
         }
     }
 
-    // getters / setters
+
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 

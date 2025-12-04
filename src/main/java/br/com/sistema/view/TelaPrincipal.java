@@ -60,6 +60,7 @@ public class TelaPrincipal extends JFrame {
 
         btnCliente.addActionListener(e -> new TelaCliente(clienteController, faturaController).setVisible(true));
         btnItem.addActionListener(e -> new TelaItem(itemController, clienteController, faturaController).setVisible(true));
+
         btnFatura.addActionListener(e -> new TelaFatura(faturaController, clienteController, itemController).setVisible(true));
 
         add(btnCliente);

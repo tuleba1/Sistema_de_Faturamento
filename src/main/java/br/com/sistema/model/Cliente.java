@@ -123,7 +123,7 @@ public class Cliente extends EntidadeBase {
         return faturas;
     }
     
-    //Data de nascimento no formato para a interface
+
     
     @Override
     public String toString() {

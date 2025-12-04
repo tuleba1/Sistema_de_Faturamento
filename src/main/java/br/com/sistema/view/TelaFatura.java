@@ -69,9 +69,8 @@ public class TelaFatura extends JFrame {
         txtSaida.setEditable(false);
         add(new JScrollPane(txtSaida), BorderLayout.CENTER);
 
-        // -------------------- AÇÕES --------------------
 
-        btnCriar.addActionListener(e -> criarFatura());
+
         btnAddItem.addActionListener(e -> adicionarItem());
         btnBuscar.addActionListener(e -> buscarFatura());
         btnListar.addActionListener(e -> listarFaturas());
@@ -79,25 +78,6 @@ public class TelaFatura extends JFrame {
     }
 
 
-    private void criarFatura() {
-        try {
-            int numero = Integer.parseInt(txtNumeroFatura.getText());
-            int idCliente = Integer.parseInt(txtIdCliente.getText());
-
-            Cliente cliente = clienteController.buscar(idCliente);
-
-            if (cliente == null) {
-                JOptionPane.showMessageDialog(this, "Cliente não encontrado!");
-                return;
-            }
-
-            faturaController.criarFatura(numero, cliente);
-            JOptionPane.showMessageDialog(this, "Fatura criada!");
-
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
-        }
-    }
 
     private void adicionarItem() {
         try {
@@ -193,5 +173,9 @@ public class TelaFatura extends JFrame {
         }
 
         txtSaida.setText(sb.toString());
+    }
+
+    private void carregarFaturasCliente() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

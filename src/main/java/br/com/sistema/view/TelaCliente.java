@@ -112,6 +112,14 @@ public class TelaCliente extends JFrame {
             );
 
             clienteController.criar(c);
+            
+            int mes = Integer.parseInt(JOptionPane.showInputDialog("Mês da primeira fatura (1 a 12):"));
+            int ano = Integer.parseInt(JOptionPane.showInputDialog("Ano da primeira fatura:"));
+
+            int numeroFatura = (int) (Math.random() * 100000);
+
+            faturaController.criarFatura(numeroFatura, c, mes, ano);
+
 
             JOptionPane.showMessageDialog(this, "Cliente cadastrado!");
 

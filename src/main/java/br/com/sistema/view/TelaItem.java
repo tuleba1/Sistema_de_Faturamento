@@ -145,9 +145,6 @@ public class TelaItem extends JFrame {
         }
     }
 
-    // ------------------------------------------
-    // CADASTRAR ITEM
-    // ------------------------------------------
     private void cadastrarItem() {
         try {
             String nome = txtNome.getText();

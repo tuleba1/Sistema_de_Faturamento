@@ -20,7 +20,8 @@ public class ItemController {
     }
 
     public void cadastrar(String nome, int quantidade, double preco) throws Exception {
-        Item item = new Item(nome, preco, quantidade);
+        Item item = new Item(nome, quantidade, (int) preco);
+        item.validar();
         service.cadastrar(item);
     }
 
