@@ -17,7 +17,7 @@ public class Item extends EntidadeBase implements Calculavel {
     private double preco;
     private int quantidade;
 
-    public Item() {}
+    public Item(String nome, double preco, int quantidade) {}
 
     public Item(int id, String nome, double preco, int quantidade) {
         this.setId(id);

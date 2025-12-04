@@ -31,8 +31,7 @@ public class ClienteController {
     )
             throws Exception{
         Cliente cliente = new Cliente(
-        0,
-        nome,
+                nome,
         email,
         endereco,
         estado,
@@ -57,5 +56,13 @@ public class ClienteController {
     
     public void deletar(int id) {
         clienteService.deletarCliente(id);
+    }
+
+    public void criar(Cliente cliente) throws Exception{
+        if (cliente == null){
+            throw new Exception("Cliente não pode ser nulo.");
+        }
+        
+        clienteService.cadastrarCliente(cliente);
     }
 }

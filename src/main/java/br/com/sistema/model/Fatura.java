@@ -13,13 +13,19 @@ import java.util.List;
  */
 public class Fatura implements Calculavel {
     private int numero; 
-    private List<Calculavel> itens = new ArrayList<>();
+    private List<Item> itens = new ArrayList<>();
+    private Cliente cliente;
     
     public Fatura(int numero){
         this.numero = numero;
+        this.cliente = cliente;
+    }
+
+    public Fatura(int numero, Cliente cliente) {
+        throw new UnsupportedOperationException("Sem suporte"); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
     
-    public void adicionarItem(Calculavel item){
+    public void adicionarItem(Item item){
         itens.add(item);
     }
     
@@ -32,5 +38,13 @@ public class Fatura implements Calculavel {
     
     public int getNumero(){
         return numero;
+    }
+    
+    public List<Item> getItens() {
+    return itens;
+}
+    
+    public Cliente getCliente(){
+        return cliente;
     }
 }

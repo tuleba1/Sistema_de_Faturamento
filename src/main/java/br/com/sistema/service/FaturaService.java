@@ -4,9 +4,13 @@
  */
 package br.com.sistema.service;
 
+import br.com.sistema.dao.ClienteDAO;
 import br.com.sistema.dao.FaturaDAO;
+import br.com.sistema.dao.ItemDAO;
 import br.com.sistema.model.Calculavel;
+import br.com.sistema.model.Cliente;
 import br.com.sistema.model.Fatura;
+import br.com.sistema.model.Item;
 import java.util.List;
 
 /**
@@ -20,7 +24,8 @@ public class FaturaService {
         this.faturaDAO = faturaDAO;
     }
     
-    public void criar (Fatura fatura){
+    public void criar (Fatura fatura, Cliente cliente){
+        cliente.adicionarFatura(fatura);
         faturaDAO.salvar(fatura);
     }
     
@@ -39,8 +44,12 @@ public class FaturaService {
     public void adicionarItem(int numero, Calculavel item){
         Fatura f = faturaDAO.buscarPorNumero(numero);
         if  (f != null){
-            f.adicionarItem(item);
+            f.adicionarItem((Item) item);
         }
+    }
+
+    public void criar(Fatura fatura) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
    
     

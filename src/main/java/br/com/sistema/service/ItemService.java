@@ -13,7 +13,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemDAO itemDAO;
-    private int idSequence = 1; // controle simples de id
+    private int idSequence = 1; 
 
     public ItemService(ItemDAO itemDAO) {
         this.itemDAO = itemDAO;
@@ -23,7 +23,7 @@ public class ItemService {
         if (item == null) {
             throw new CampoInvalidoException("Item não pode ser nulo.");
         }
-        item.setId(idSequence++); // atribui id automático
+        item.setId(idSequence++); 
         item.validar();
         itemDAO.salvar(item);
     }

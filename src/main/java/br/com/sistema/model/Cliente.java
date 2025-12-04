@@ -5,6 +5,8 @@
 package br.com.sistema.model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 /**
  *
  * @author tulio
@@ -16,16 +18,10 @@ public class Cliente extends EntidadeBase {
     private String estado;
     private String paisNascimento;
     private LocalDate dataNascimento;
+    private List<Fatura> faturas = new ArrayList<>();
     
     public Cliente(
-           int id,
-           String nome,
-           String email,
-           String endereco,
-           String estado,
-           String paisNascimento,
-           LocalDate dataNascimento
-    ){
+            String nome, String email, String endereco, String estado, String paisNascimento, LocalDate dataNascimento){
         this.setId(id);
         this.nome = nome;
         this.email = email;
@@ -64,6 +60,11 @@ public class Cliente extends EntidadeBase {
             throw new Exception("Data de nascimento inválida");
         } //Data de nascimento acima da data atual
     }
+    
+    public void adicionarFatura(Fatura f){
+        faturas.add(f);
+    }
+    
 
     public String getNome() {
         return nome;
@@ -117,6 +118,11 @@ public class Cliente extends EntidadeBase {
         DateTimeFormatter data = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return dataNascimento.format(data);
     }
+    
+    public List<Fatura> getFaturas(){
+        return faturas;
+    }
+    
     //Data de nascimento no formato para a interface
     
     @Override

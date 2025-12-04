@@ -6,6 +6,7 @@ package br.com.sistema.service;
 
 import br.com.sistema.dao.ClienteDAO;
 import br.com.sistema.model.Cliente;
+import br.com.sistema.model.Fatura;
 import java.util.List;
 
 /**
@@ -41,6 +42,12 @@ public class ClienteService {
     
     public void deletarCliente(int id){
         clienteDAO.deletar(id);
+    }
+    
+    public double calcularTotalCliente(Cliente cliente){
+        return cliente.getFaturas().stream()
+               .mapToDouble(Fatura::calcularTotal)
+               .sum();
     }
 }
 

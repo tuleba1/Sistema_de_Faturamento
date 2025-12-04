@@ -1,3 +1,4 @@
+br\com\sistema\dao\ItemDAOArrayList.class
 br\com\sistema\dao\ClienteDAOArrayList.class
 br\com\sistema\model\Cliente.class
 br\com\sistema\dao\FaturaDAO.class
@@ -5,10 +6,20 @@ br\com\sistema\model\Calculavel.class
 br\com\sistema\view\TelaCliente.class
 br\com\sistema\model\Fatura.class
 br\com\sistema\model\EntidadeBase.class
-br\com\sistema\model\Item.class
-br\com\sistema\view\Main.class
+br\com\sistema\view\TelaPrincipal.class
+br\com\sistema\dao\FaturaDAOArrayList.class
 br\com\sistema\dao\ItemDAO.class
 br\com\sistema\service\FaturaService.class
+br\com\sistema\view\TelaFatura.class
 br\com\sistema\dao\ClienteDAO.class
 br\com\sistema\exception\ValidacaoException.class
+br\com\sistema\dao\DAO.class
+br\com\sistema\service\ClienteService.class
+br\com\sistema\service\ItemService.class
+br\com\sistema\exception\CampoInvalidoException.class
+br\com\sistema\controller\ClienteController.class
+br\com\sistema\controller\ItemController.class
+br\com\sistema\model\Item.class
+br\com\sistema\dao\AbstractDAOArrayList.class
+br\com\sistema\view\TelaItem.class
 br\com\sistema\controller\FaturaController.class
