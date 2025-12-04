@@ -22,9 +22,6 @@ public class FaturaController {
         this.itemService = itemService;
     }
 
-    // ---------------------------------------------------------
-    // CRIAR FATURA PARA UM CLIENTE
-    // ---------------------------------------------------------
     public void criarFatura(int numero, Cliente cliente, int mes, int ano) {
         if (cliente == null) {
             throw new IllegalArgumentException("Cliente não pode ser nulo.");
@@ -33,7 +30,6 @@ public class FaturaController {
         Fatura fatura = new Fatura(numero, cliente, mes, ano);
         faturaService.criar(fatura, cliente);
 
-        // adiciona a fatura ao cliente (se desejar manter histórico no cliente)
         cliente.adicionarFatura(fatura);
     }
 

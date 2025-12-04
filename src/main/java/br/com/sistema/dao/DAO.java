@@ -11,7 +11,7 @@ import java.util.List;
  * @author tulio
  */
 interface DAO<T> {
-        void salvar(T entidade);
+    void salvar(T entidade);
 
     T buscarPorId(int id);
 
