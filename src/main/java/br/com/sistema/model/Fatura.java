@@ -32,11 +32,13 @@ public class Fatura implements Calculavel {
 
     @Override
     public double calcularTotal() {
-        return itens.stream()
-                .mapToDouble(Calculavel::calcularTotal)
-                .sum();
-    }
+          double total = 0;
 
+          for (Calculavel item : itens) {
+              total += item.calcularTotal(); 
+          }
+          return total;
+    }
     public int getNumero() {
         return numero;
     }

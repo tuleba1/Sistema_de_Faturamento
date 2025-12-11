@@ -14,25 +14,25 @@ import br.com.sistema.exception.CampoInvalidoException;
 public class Item extends EntidadeBase implements Calculavel {
 
     private String nome;
-    private double preco;
+    private double valor;
     private int quantidade;
 
-  public Item(String nome, int quantidade, double preco) {
+  public Item(String nome, int quantidade, double valor) {
         this.nome = nome;
         this.quantidade = quantidade;
-        this.preco = preco;
+        this.valor = valor;
     }
 
-    public Item(int id, String nome, double preco, int quantidade) {
+    public Item(int id, String nome, double valor, int quantidade) {
         this.setId(id);
         this.nome = nome;
-        this.preco = preco;
+        this.valor = valor;
         this.quantidade = quantidade;
     }
 
     @Override
     public double calcularTotal() {
-        return preco * quantidade;
+        return valor * quantidade;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class Item extends EntidadeBase implements Calculavel {
         if (quantidade <= 0) {
             throw new CampoInvalidoException("A quantidade deve ser maior que zero.");
         }
-        if (preco <= 0) {
+        if (valor <= 0) {
             throw new CampoInvalidoException("O preço deve ser maior que zero.");
         }
     }
@@ -52,14 +52,14 @@ public class Item extends EntidadeBase implements Calculavel {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public double getPreco() { return preco; }
-    public void setPreco(double preco) { this.preco = preco; }
+    public double getPreco() { return valor; }
+    public void setPreco(double preco) { this.valor = preco;}
 
     public int getQuantidade() { return quantidade; }
     public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
 
     @Override
     public String toString() {
-        return getId() + " - " + nome + " (Qtd: " + quantidade + ", Preço: " + preco + ")";
+        return getId() + " - " + nome + " (Qtd: " + quantidade + ", Preço: " + valor + ")";
     }
 }

@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import java.util.stream.IntStream;
 
 public class TelaFatura extends JFrame {
@@ -26,79 +25,104 @@ public class TelaFatura extends JFrame {
     private JTextField txtNumero;
     private JComboBox<String> comboMes;
     private JComboBox<Integer> comboAno;
-    private DefaultListModel<String> itensModel;
-    private JComboBox<String> comboCliente; 
-    private JComboBox<String> comboItem;    
+    private JComboBox<String> comboCliente;
+    private JComboBox<String> comboItem;
 
     private JTextArea txtSaida;
+
+    private DefaultListModel<String> itensSelecionadosModel = new DefaultListModel<>();
+    private JList<String> listaItensSelecionados;
+    private List<Item> itensSelecionados = new ArrayList<>();
 
     public TelaFatura(FaturaController faturaController,
                       ClienteController clienteController,
                       ItemController itemController) {
+
         this.faturaController = faturaController;
         this.clienteController = clienteController;
         this.itemController = itemController;
 
         setTitle("Gerenciamento de Faturas");
-        setSize(700, 600);
+        setSize(750, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
         initComponents();
         carregarClientes();
         carregarItems();
-        listarFaturasNaSaida(); 
+        listarFaturasNaSaida();
     }
 
     private void initComponents() {
         JPanel painel = new JPanel(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(6,6,6,6);
+        c.insets = new Insets(6, 6, 6, 6);
         c.fill = GridBagConstraints.HORIZONTAL;
 
         int row = 0;
 
-        c.gridx = 0; c.gridy = row; painel.add(new JLabel("Número da Fatura:"), c);
-        txtNumero = new JTextField(); c.gridx = 1; painel.add(txtNumero, c);
+        // Número da fatura
+        c.gridx = 0; c.gridy = row;
+        painel.add(new JLabel("Número da Fatura:"), c);
+        txtNumero = new JTextField();
+        c.gridx = 1;
+        painel.add(txtNumero, c);
 
+        // Cliente
         row++;
-        c.gridx = 0; c.gridy = row; painel.add(new JLabel("Cliente:"), c);
-        comboCliente = new JComboBox<>(); c.gridx = 1; painel.add(comboCliente, c);
+        c.gridx = 0; c.gridy = row;
+        painel.add(new JLabel("Cliente:"), c);
+        comboCliente = new JComboBox<>();
+        c.gridx = 1;
+        painel.add(comboCliente, c);
 
-        String[] meses = new DateFormatSymbols(new Locale("pt","BR")).getMonths();
-
-       String[] meses12 = new String[12];
-       System.arraycopy(meses, 0, meses12, 0, 12);
+        // Mês
+        row++;
+        c.gridx = 0; c.gridy = row;
+        painel.add(new JLabel("Mês:"), c);
 
         comboMes = new JComboBox<>();
-        String[] mes = {
-            "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-            "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-        };
-        for (String m : meses) comboMes.addItem(m);
-        painel.add(new JLabel("Mês:"), c);
+        String[] meses = new DateFormatSymbols(new Locale("pt", "BR")).getMonths();
+        for (int i = 0; i < 12; i++) comboMes.addItem(meses[i]);
         c.gridx = 1;
         painel.add(comboMes, c);
 
- 
-       int anoAtual = LocalDate.now().getYear();
-       int anoInicial = 2000;
-       Integer[] anos = IntStream.rangeClosed(anoInicial, anoAtual)
-                                 .boxed()
-                                 .toArray(Integer[]::new);
-
-       comboAno = new JComboBox<>(anos);
-       comboAno.setSelectedItem(anoAtual); // por padrão seleciona o ano atual
-       row++;
-       c.gridx = 0; c.gridy = row; painel.add(new JLabel("Ano:"), c);
-       c.gridx = 1; painel.add(comboAno, c);
-
-
+        // Ano
         row++;
-        c.gridx = 0; c.gridy = row; painel.add(new JLabel("Item (selecionar e adicionar):"), c);
-        comboItem = new JComboBox<>(); c.gridx = 1; painel.add(comboItem, c);
+        int anoAtual = LocalDate.now().getYear();
+        Integer[] anos = IntStream.rangeClosed(2000, anoAtual).boxed().toArray(Integer[]::new);
 
+        c.gridx = 0; c.gridy = row;
+        painel.add(new JLabel("Ano:"), c);
+        comboAno = new JComboBox<>(anos);
+        comboAno.setSelectedItem(anoAtual);
+        c.gridx = 1;
+        painel.add(comboAno, c);
+
+        // Item para selecionar
         row++;
-        JPanel botoes = new JPanel(new GridLayout(1,4,8,8));
+        c.gridx = 0; c.gridy = row;
+        painel.add(new JLabel("Selecionar Item:"), c);
+
+        comboItem = new JComboBox<>();
+        c.gridx = 1;
+        painel.add(comboItem, c);
+
+        // Lista visual dos itens selecionados
+        row++;
+        c.gridx = 0; c.gridy = row;
+        painel.add(new JLabel("Itens Selecionados:"), c);
+
+        listaItensSelecionados = new JList<>(itensSelecionadosModel);
+        listaItensSelecionados.setVisibleRowCount(5);
+        JScrollPane scroll = new JScrollPane(listaItensSelecionados);
+
+        c.gridx = 1;
+        painel.add(scroll, c);
+
+        // Botões de ação
+        row++;
+        JPanel botoes = new JPanel(new GridLayout(1, 4, 8, 8));
         JButton btnCriar = new JButton("Criar Fatura");
         JButton btnAddItem = new JButton("Adicionar Item");
         JButton btnBuscar = new JButton("Buscar Fatura");
@@ -109,7 +133,8 @@ public class TelaFatura extends JFrame {
         botoes.add(btnBuscar);
         botoes.add(btnListar);
 
-        c.gridx = 0; c.gridy = ++row; c.gridwidth = 2; painel.add(botoes, c);
+        c.gridx = 0; c.gridy = row; c.gridwidth = 2;
+        painel.add(botoes, c);
         c.gridwidth = 1;
 
         add(painel, BorderLayout.NORTH);
@@ -118,13 +143,12 @@ public class TelaFatura extends JFrame {
         txtSaida.setEditable(false);
         add(new JScrollPane(txtSaida), BorderLayout.CENTER);
 
- 
+        // Ações
         btnCriar.addActionListener(e -> criarFatura());
         btnAddItem.addActionListener(e -> adicionarItemAction());
         btnBuscar.addActionListener(e -> buscarFaturaAction());
         btnListar.addActionListener(e -> listarFaturasNaSaida());
     }
-
 
     private void carregarClientes() {
         comboCliente.removeAllItems();
@@ -142,65 +166,57 @@ public class TelaFatura extends JFrame {
         }
     }
 
+    private void adicionarItemAction() {
+        try {
+            if (comboItem.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "Selecione um item.");
+                return;
+            }
+
+            String itemStr = comboItem.getSelectedItem().toString();
+            int idItem = Integer.parseInt(itemStr.split(" - ")[0]);
+            Item item = itemController.buscar(idItem);
+
+            itensSelecionados.add(item);
+            itensSelecionadosModel.addElement(
+                    item.getId() + " - " + item.getNome() + " (Qtd: " + item.getQuantidade() + ")"
+            );
+
+            JOptionPane.showMessageDialog(this, "Item adicionado!");
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao adicionar item: " + ex.getMessage());
+        }
+    }
 
     private void criarFatura() {
         try {
-
             int numero = Integer.parseInt(txtNumero.getText());
-
 
             String cliStr = comboCliente.getSelectedItem().toString();
             int idCliente = Integer.parseInt(cliStr.split(" - ")[0]);
             Cliente cliente = clienteController.buscar(idCliente);
 
-
             String mes = comboMes.getSelectedItem().toString();
             int ano = Integer.parseInt(comboAno.getSelectedItem().toString());
 
+            faturaController.criarFatura(
+                    numero,
+                    cliente,
+                    ano,
+                    mes,
+                    new ArrayList<>(itensSelecionados)
+            );
 
-            List<Item> itens = new ArrayList<>();
+            JOptionPane.showMessageDialog(this, "Fatura criada!");
 
-            if (comboItem.getSelectedItem() != null) {
-                String itemStr = comboItem.getSelectedItem().toString();
-                int idItem = Integer.parseInt(itemStr.split(" - ")[0]);
-                Item item = itemController.buscar(idItem);
-                itens.add(item);
-            }
-   
-            
-            faturaController.criarFatura(numero, cliente, ano, mes, itens);
+            itensSelecionados.clear();
+            itensSelecionadosModel.clear();
 
-            JOptionPane.showMessageDialog(this, "Fatura criada com sucesso!");
+            listarFaturasNaSaida();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
-        }
-    }
-
-
-    private void adicionarItemAction() {
-        try {
-            int numero = Integer.parseInt(txtNumero.getText());
-            if (comboItem.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(this, "Selecione um item.");
-                return;
-            }
-            String itemStr = comboItem.getSelectedItem().toString();
-            int idItem = Integer.parseInt(itemStr.split(" - ")[0]);
-            Item item = itemController.buscar(idItem);
-            if (item == null) { JOptionPane.showMessageDialog(this, "Item inválido."); return; }
-
-            boolean ok = faturaController.adicionarItemNaFatura(numero, item);
-            if (!ok) {
-                JOptionPane.showMessageDialog(this, "Fatura não encontrada (verifique o número).");
-            } else {
-                JOptionPane.showMessageDialog(this, "Item adicionado à fatura!");
-                buscarFaturaAction();
-            }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Número inválido: " + ex.getMessage());
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao adicionar item: " + ex.getMessage());
         }
     }
 
@@ -208,46 +224,58 @@ public class TelaFatura extends JFrame {
         try {
             int numero = Integer.parseInt(txtNumero.getText());
             Fatura f = faturaController.buscar(numero);
+
             if (f == null) {
                 txtSaida.setText("Fatura não encontrada.");
                 return;
             }
+
             mostrarFatura(f);
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Número inválido.");
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao buscar fatura.");
         }
     }
 
     private void listarFaturasNaSaida() {
         List<Fatura> faturas = faturaController.listar();
         StringBuilder sb = new StringBuilder();
+
         for (Fatura f : faturas) {
             sb.append("Fatura Nº ").append(f.getNumero())
-              .append(" | Cliente: ").append(f.getCliente() != null ? f.getCliente().getNome() : "N/A")
+              .append(" | Cliente: ").append(f.getCliente() != null ? f.getCliente().getId() + " - " + f.getCliente().getNome() : "N/A")
               .append(" | Mês/Ano: ").append(f.getMes()).append("/").append(f.getAno())
               .append(" | Total: ").append(f.calcularTotal())
               .append("\n");
         }
+
         txtSaida.setText(sb.toString());
     }
 
     private void mostrarFatura(Fatura f) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Fatura Nº ").append(f.getNumero()).append("\n");
-        sb.append("Cliente: ").append(f.getCliente() != null ? f.getCliente().getNome() : "N/A").append("\n");
-        sb.append("Referencia: ").append(f.getMes()).append("/").append(f.getAno()).append("\n");
-        sb.append("Total: ").append(f.calcularTotal()).append("\n\n");
-        sb.append("Itens:\n");
-        for (var c : f.getItens()) {
-          
-            Item it = (Item) c;
+        sb.append("=== DETALHES DA FATURA ===\n\n");
+
+        sb.append("Número: ").append(f.getNumero()).append("\n");
+        sb.append("Cliente: ").append(f.getCliente().getId())
+          .append(" - ").append(f.getCliente().getNome()).append("\n");
+        sb.append("Referência: ").append(f.getMes()).append("/").append(f.getAno()).append("\n");
+        sb.append("Total da Fatura: ").append(f.calcularTotal()).append("\n\n");
+
+        sb.append("Itens da Fatura:\n");
+
+        for (var calc : f.getItens()) {
+            Item it = (Item) calc;
+
             sb.append("ID: ").append(it.getId())
-              .append(" | ").append(it.getNome())
-              .append(" | Qtd: ").append(it.getQuantidade())
-              .append(" | Unit: ").append(it.getPreco())
-              .append(" | Total: ").append(it.calcularTotal())
+              .append(" | Nome: ").append(it.getNome())
+              .append(" | Quantidade: ").append(it.getQuantidade())
+              .append(" | Valor Unit.: ").append(it.getPreco())
+              .append(" | Total Item: ").append(it.calcularTotal())
               .append("\n");
         }
+
         txtSaida.setText(sb.toString());
     }
+
 }
