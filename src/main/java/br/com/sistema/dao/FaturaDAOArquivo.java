@@ -54,7 +54,7 @@ public class FaturaDAOArquivo implements FaturaDAO {
 
                 int numero = Integer.parseInt(dados[0]);
                 int clienteId = Integer.parseInt(dados[1]);
-                int mes = Integer.parseInt(dados[2]);
+                String mes = dados[2];
                 int ano = Integer.parseInt(dados[3]);
 
                 Cliente cliente = new Cliente("","","","","", java.time.LocalDate.now());

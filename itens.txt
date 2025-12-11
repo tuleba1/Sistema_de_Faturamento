@@ -1,3 +1,11 @@
 1;Carro;20000;1.0
 2;Tesoura;4;1.0
 3;Tesoura;4;1.0
+1;Carro;2;50000.0
+2;Carro;2;50000.0
+3;Estojo ;6;8.0
+4;Estojo ;6;8.0
+5;Estojo ;6;8.0
+6;Celular  ;15;1870.0
+7;Celular  ;15;1870.0
+8;Celular  ;35;1870.0

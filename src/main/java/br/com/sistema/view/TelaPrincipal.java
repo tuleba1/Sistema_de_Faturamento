@@ -11,7 +11,7 @@ import br.com.sistema.dao.FaturaDAO;
 import br.com.sistema.dao.FaturaDAOArquivo;
 import br.com.sistema.dao.ItemDAO;
 import br.com.sistema.dao.ItemDAOArquivo;
-import br.com.sistema.dao.UsuarioDAOArquivo;
+
 
 import br.com.sistema.service.ClienteService;
 import br.com.sistema.service.ItemService;

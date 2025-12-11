@@ -14,12 +14,12 @@ import java.util.List;
 public class Fatura implements Calculavel {
     private int numero;
     private Cliente cliente;
-    private int mes;
+    private String mes;
     private int ano;
 
     private List<Calculavel> itens = new ArrayList<>();
 
-    public Fatura(int numero, Cliente cliente, int mes, int ano) {
+    public Fatura(int numero, Cliente cliente, String mes, int ano) {
         this.numero = numero;
         this.cliente = cliente;
         this.mes = mes;
@@ -45,7 +45,7 @@ public class Fatura implements Calculavel {
         return cliente;
     }
 
-    public int getMes() {
+    public String getMes() {
         return mes;
     }
 

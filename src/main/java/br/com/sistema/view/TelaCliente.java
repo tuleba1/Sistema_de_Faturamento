@@ -118,7 +118,7 @@ public class TelaCliente extends JFrame {
 
             int numeroFatura = (int) (Math.random() * 100000);
 
-            faturaController.criarFatura(numeroFatura, c, mes, ano);
+
 
 
             JOptionPane.showMessageDialog(this, "Cliente cadastrado!");

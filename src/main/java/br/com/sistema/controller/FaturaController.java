@@ -22,23 +22,32 @@ public class FaturaController {
         this.itemService = itemService;
     }
 
-    public void criarFatura(int numero, Cliente cliente, int mes, int ano) {
-        if (cliente == null) {
-            throw new IllegalArgumentException("Cliente não pode ser nulo.");
-        }
+    public void criarFatura(int numero, Cliente cliente, int ano, String mes, List<Item> itensSelecionados) throws Exception {
+       if (cliente == null) {
+           throw new Exception("Cliente inválido.");
+       }
 
-        Fatura fatura = new Fatura(numero, cliente, mes, ano);
-        faturaService.criar(fatura, cliente);
+       Fatura fatura = new Fatura(numero, cliente, mes, ano);
 
-        cliente.adicionarFatura(fatura);
-    }
+
+       for (Item item : itensSelecionados) {
+           fatura.adicionarItem(item);
+       }
+
+
+       faturaService.criar(fatura, cliente);
+
+
+       cliente.adicionarFatura(fatura);
+   }
+
 
 
     public boolean adicionarItemNaFatura(int numeroFatura, Item item) {
         Fatura f = faturaService.buscar(numeroFatura);
 
         if (f == null) {
-            return false; // fatura inexistente
+            return false;
         }
 
         f.adicionarItem(item);
