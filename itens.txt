@@ -1,0 +1,3 @@
+1;Carro;20000;1.0
+2;Tesoura;4;1.0
+3;Tesoura;4;1.0

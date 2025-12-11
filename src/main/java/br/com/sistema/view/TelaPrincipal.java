@@ -4,13 +4,19 @@ import br.com.sistema.controller.ClienteController;
 import br.com.sistema.controller.ItemController;
 import br.com.sistema.controller.FaturaController;
 
-import br.com.sistema.dao.ClienteDAOArrayList;
-import br.com.sistema.dao.ItemDAOArrayList;
-import br.com.sistema.dao.FaturaDAOArrayList;
+
+import br.com.sistema.dao.ClienteDAO;
+import br.com.sistema.dao.ClienteDAOArquivo;
+import br.com.sistema.dao.FaturaDAO;
+import br.com.sistema.dao.FaturaDAOArquivo;
+import br.com.sistema.dao.ItemDAO;
+import br.com.sistema.dao.ItemDAOArquivo;
+import br.com.sistema.dao.UsuarioDAOArquivo;
 
 import br.com.sistema.service.ClienteService;
 import br.com.sistema.service.ItemService;
 import br.com.sistema.service.FaturaService;
+
 
 import javax.swing.*;
 
@@ -22,15 +28,15 @@ public class TelaPrincipal extends JFrame {
 
     public TelaPrincipal() {
 
-
-        ClienteDAOArrayList clienteDAO = new ClienteDAOArrayList();
-        ItemDAOArrayList itemDAO = new ItemDAOArrayList();
-        FaturaDAOArrayList faturaDAO = new FaturaDAOArrayList();
+        ClienteDAO clienteDAO = new ClienteDAOArquivo("clientes.txt");
+        ItemDAO itemDAO = new ItemDAOArquivo("itens.txt");
+        FaturaDAO faturaDAO = new FaturaDAOArquivo("faturas.txt");
 
 
         ClienteService clienteService = new ClienteService(clienteDAO);
         ItemService itemService = new ItemService(itemDAO);
         FaturaService faturaService = new FaturaService(faturaDAO);
+
 
         clienteController = new ClienteController(clienteService);
         itemController = new ItemController(itemService);
@@ -67,7 +73,6 @@ public class TelaPrincipal extends JFrame {
         add(btnItem);
         add(btnFatura);
     }
-
     public static void main(String[] args) {
         new TelaPrincipal().setVisible(true);
     }
