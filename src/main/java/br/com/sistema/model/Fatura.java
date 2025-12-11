@@ -1,61 +1,70 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.sistema.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author tulio
- */
-public class Fatura implements Calculavel {
-    private int numero;
+public class Fatura {
+
+    private int id;
     private Cliente cliente;
     private String mes;
-    private int ano;
+    private String ano;
+    private List<ItemFatura> itens = new ArrayList<>();
 
-    private List<Calculavel> itens = new ArrayList<>();
+    public Fatura() {}
 
-    public Fatura(int numero, Cliente cliente, String mes, int ano) {
-        this.numero = numero;
-        this.cliente = cliente;
-        this.mes = mes;
-        this.ano = ano;
+    // -----------------------------
+    // GETTERS E SETTERS
+    // -----------------------------
+    public int getId() {
+        return id;
     }
 
-    public void adicionarItem(Calculavel item) {
-        itens.add(item);
-    }
-
-    @Override
-    public double calcularTotal() {
-          double total = 0;
-
-          for (Calculavel item : itens) {
-              total += item.calcularTotal(); 
-          }
-          return total;
-    }
-    public int getNumero() {
-        return numero;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Cliente getCliente() {
         return cliente;
     }
 
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
     public String getMes() {
         return mes;
     }
 
-    public int getAno() {
+    public void setMes(String mes) {
+        this.mes = mes;
+    }
+
+    public String getAno() {
         return ano;
     }
 
-    public List<Calculavel> getItens() {
+    public void setAno(String ano) {
+        this.ano = ano;
+    }
+
+    public List<ItemFatura> getItens() {
         return itens;
+    }
+
+    public void setItens(List<ItemFatura> itens) {
+        this.itens = itens;
+    }
+
+
+    public void adicionarItem(ItemFatura item) {
+        itens.add(item);
+    }
+
+  
+    public double calcularTotal() {
+        return itens.stream()
+                .mapToDouble(ItemFatura::calcularSubtotal)
+                .sum();
     }
 }

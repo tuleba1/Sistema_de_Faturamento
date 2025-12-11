@@ -1,34 +1,26 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.sistema.service;
 
 import br.com.sistema.dao.ItemDAO;
-import br.com.sistema.exception.CampoInvalidoException;
 import br.com.sistema.model.Item;
-
 import java.util.List;
 
 public class ItemService {
 
     private final ItemDAO itemDAO;
-    private int idSequence = 1; 
 
     public ItemService(ItemDAO itemDAO) {
         this.itemDAO = itemDAO;
     }
 
-    public void cadastrar(Item item) throws CampoInvalidoException {
+    public void salvar(Item item) throws Exception {
         if (item == null) {
-            throw new CampoInvalidoException("Item não pode ser nulo.");
+            throw new Exception("Item inválido.");
         }
-        item.setId(idSequence++); 
         item.validar();
         itemDAO.salvar(item);
     }
 
-    public List<Item> listarTodos() {
+    public List<Item> buscarTodos() {
         return itemDAO.buscarTodos();
     }
 
@@ -36,12 +28,9 @@ public class ItemService {
         return itemDAO.buscarPorId(id);
     }
 
-    public void atualizar(Item item) throws CampoInvalidoException {
+    public void atualizar(Item item) throws Exception {
         if (item == null) {
-            throw new CampoInvalidoException("Item não pode ser nulo.");
-        }
-        if (item.getId() <= 0) {
-            throw new CampoInvalidoException("ID do item inválido.");
+            throw new Exception("Item inválido.");
         }
         item.validar();
         itemDAO.atualizar(item);

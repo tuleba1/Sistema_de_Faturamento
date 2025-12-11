@@ -1,53 +1,38 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.sistema.service;
 
-import br.com.sistema.dao.ClienteDAO;
 import br.com.sistema.dao.FaturaDAO;
-import br.com.sistema.dao.ItemDAO;
-import br.com.sistema.model.Calculavel;
-import br.com.sistema.model.Cliente;
 import br.com.sistema.model.Fatura;
 import br.com.sistema.model.Item;
+import br.com.sistema.model.ItemFatura;
 import java.util.List;
 
-/**
- *
- * @author tulio
- */
 public class FaturaService {
+
     private FaturaDAO faturaDAO;
-    
-    public FaturaService (FaturaDAO faturaDAO){
+
+    public FaturaService(FaturaDAO faturaDAO) {
         this.faturaDAO = faturaDAO;
     }
-    
-    public void criar (Fatura fatura, Cliente cliente){
-        cliente.adicionarFatura(fatura);
-        faturaDAO.salvar(fatura);
-    }
-    
-    public Fatura buscar(int numero){
+
+    public Fatura buscar(int numero) {
         return faturaDAO.buscarPorNumero(numero);
     }
-    
-    public List<Fatura> listar(){
+
+    public List<Fatura> listar() {
         return faturaDAO.listarTodas();
     }
-    
-    public boolean remover(int numero){
+
+    public boolean remover(int numero) {
         return faturaDAO.remover(numero);
     }
-    
-    public void adicionarItem(int numero, Calculavel item){
+
+    // AGORA FUNCIONA: adicionar item COM QUANTIDADE
+    public void adicionarItem(int numero, Item item, int quantidade) {
         Fatura f = faturaDAO.buscarPorNumero(numero);
-        if  (f != null){
-            f.adicionarItem((Item) item);
+
+        if (f != null) {
+            ItemFatura itemF = new ItemFatura(item, quantidade);
+            f.adicionarItem(itemF);
         }
     }
 }
-
-    
-

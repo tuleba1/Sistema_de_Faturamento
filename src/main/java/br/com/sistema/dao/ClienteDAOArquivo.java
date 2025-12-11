@@ -14,22 +14,27 @@ public class ClienteDAOArquivo implements ClienteDAO {
         this.nomeArquivo = nomeArquivo;
     }
 
+ 
     private void salvarNoArquivo(List<Cliente> clientes) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(nomeArquivo))) {
+
             for (Cliente c : clientes) {
-                pw.println(c.getId() + ";" +
-                           c.getNome() + ";" +
-                           c.getEmail() + ";" +
-                           c.getEndereco() + ";" +
-                           c.getEstado() + ";" +
-                           c.getPaisNascimento() + ";" +
-                           c.getDataNascimento());
+                pw.println(
+                        c.getId() + ";" +
+                        c.getNome() + ";" +
+                        c.getEmail() + ";" +
+                        c.getEndereco() + ";" +
+                        c.getCpf() + ";" +
+                        c.getDataNascimento()  // formato ISO yyyy-MM-dd
+                );
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    // ---------- CARREGAR ARQUIVO ----------
     private List<Cliente> carregarArquivo() {
         List<Cliente> lista = new ArrayList<>();
 
@@ -37,20 +42,30 @@ public class ClienteDAOArquivo implements ClienteDAO {
         if (!file.exists()) return lista;
 
         try (BufferedReader br = new BufferedReader(new FileReader(nomeArquivo))) {
+
             String linha;
 
             while ((linha = br.readLine()) != null) {
                 String[] dados = linha.split(";");
 
+                if (dados.length < 6) continue; // proteção
+
+                String nome = dados[1];
+                String email = dados[2];
+                String endereco = dados[3];
+                String cpf = dados[4];
+                LocalDate nasc = LocalDate.parse(dados[5]);
+
                 Cliente c = new Cliente(
-                        dados[1],
-                        dados[2],
-                        dados[3],
-                        dados[4],
-                        dados[5],
-                        LocalDate.parse(dados[6])
+                        nome,
+                        email,
+                        endereco,
+                        cpf,
+                        nasc
                 );
+
                 c.setId(Integer.parseInt(dados[0]));
+
                 lista.add(c);
             }
 
@@ -69,6 +84,7 @@ public class ClienteDAOArquivo implements ClienteDAO {
         salvarNoArquivo(clientes);
     }
 
+
     @Override
     public Cliente buscarPorId(int id) {
         return carregarArquivo().stream()
@@ -81,6 +97,7 @@ public class ClienteDAOArquivo implements ClienteDAO {
     public List<Cliente> listarTodos() {
         return carregarArquivo();
     }
+
 
     @Override
     public void atualizar(Cliente cliente) {

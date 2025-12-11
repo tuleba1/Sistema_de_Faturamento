@@ -1,6 +1,7 @@
 package br.com.sistema.dao;
 
 import br.com.sistema.model.Item;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,10 +17,11 @@ public class ItemDAOArquivo implements ItemDAO {
     private void salvarNoArquivo(List<Item> itens) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(nomeArquivo))) {
             for (Item i : itens) {
-                pw.println(i.getId() + ";" +
-                           i.getNome() + ";" +
-                           i.getQuantidade() + ";" +
-                           i.getPreco());
+                pw.println(
+                        i.getId() + ";" +
+                        i.getNome() + ";" +
+                        i.getPreco()
+                );
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -38,12 +40,15 @@ public class ItemDAOArquivo implements ItemDAO {
             while ((linha = br.readLine()) != null) {
                 String[] dados = linha.split(";");
 
+                if (dados.length < 3) continue;
+
                 Item item = new Item(
                         dados[1],
-                        Integer.parseInt(dados[2]),
-                        Double.parseDouble(dados[3])
+                        Double.parseDouble(dados[2])
                 );
+
                 item.setId(Integer.parseInt(dados[0]));
+
                 lista.add(item);
             }
 
@@ -54,11 +59,14 @@ public class ItemDAOArquivo implements ItemDAO {
         return lista;
     }
 
+ 
+
     @Override
-    public void salvar(Item item) {
-        List<Item> lista = carregarArquivo();
-        lista.add(item);
-        salvarNoArquivo(lista);
+    public void salvar(Item entidade) {
+        List<Item> itens = carregarArquivo();
+        entidade.setId(gerarNovoId(itens));
+        itens.add(entidade);
+        salvarNoArquivo(itens);
     }
 
     @Override
@@ -75,13 +83,13 @@ public class ItemDAOArquivo implements ItemDAO {
     }
 
     @Override
-    public void atualizar(Item item) {
-        List<Item> lista = carregarArquivo();
+    public void atualizar(Item entidade) {
+        List<Item> itens = carregarArquivo();
 
-        for (int i = 0; i < lista.size(); i++) {
-            if (lista.get(i).getId() == item.getId()) {
-                lista.set(i, item);
-                salvarNoArquivo(lista);
+        for (int i = 0; i < itens.size(); i++) {
+            if (itens.get(i).getId() == entidade.getId()) {
+                itens.set(i, entidade);
+                salvarNoArquivo(itens);
                 return;
             }
         }
@@ -89,8 +97,14 @@ public class ItemDAOArquivo implements ItemDAO {
 
     @Override
     public void remover(int id) {
-        List<Item> lista = carregarArquivo();
-        lista.removeIf(i -> i.getId() == id);
-        salvarNoArquivo(lista);
+        List<Item> itens = carregarArquivo();
+        itens.removeIf(i -> i.getId() == id);
+        salvarNoArquivo(itens);
+    }
+
+
+    private int gerarNovoId(List<Item> itens) {
+        if (itens.isEmpty()) return 1;
+        return itens.get(itens.size() - 1).getId() + 1;
     }
 }

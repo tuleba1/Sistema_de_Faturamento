@@ -6,276 +6,209 @@ import br.com.sistema.controller.ItemController;
 import br.com.sistema.model.Cliente;
 import br.com.sistema.model.Fatura;
 import br.com.sistema.model.Item;
-
-import javax.swing.*;
-import java.awt.*;
-import java.text.DateFormatSymbols;
-import java.time.LocalDate;
-import java.util.ArrayList;
+import br.com.sistema.model.ItemFatura;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.IntStream;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
-public class TelaFatura extends JFrame {
+public class TelaFatura extends javax.swing.JFrame {
 
-    private final FaturaController faturaController;
-    private final ClienteController clienteController;
-    private final ItemController itemController;
+    private FaturaController faturaController;
+    private ClienteController clienteController;
+    private ItemController itemController;
 
-    private JTextField txtNumero;
-    private JComboBox<String> comboMes;
-    private JComboBox<Integer> comboAno;
-    private JComboBox<String> comboCliente;
-    private JComboBox<String> comboItem;
+    private Fatura faturaAtual;
 
-    private JTextArea txtSaida;
-
-    private DefaultListModel<String> itensSelecionadosModel = new DefaultListModel<>();
-    private JList<String> listaItensSelecionados;
-    private List<Item> itensSelecionados = new ArrayList<>();
-
-    public TelaFatura(FaturaController faturaController,
-                      ClienteController clienteController,
-                      ItemController itemController) {
-
-        this.faturaController = faturaController;
-        this.clienteController = clienteController;
-        this.itemController = itemController;
-
-        setTitle("Gerenciamento de Faturas");
-        setSize(750, 650);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
+    public TelaFatura(ClienteController cc, ItemController ic, FaturaController fc) {
         initComponents();
-        carregarClientes();
-        carregarItems();
-        listarFaturasNaSaida();
+        this.clienteController = cc;
+        this.itemController = ic;
+        this.faturaController = fc;
     }
 
+    @SuppressWarnings("unchecked")
     private void initComponents() {
-        JPanel painel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(6, 6, 6, 6);
-        c.fill = GridBagConstraints.HORIZONTAL;
 
-        int row = 0;
+        jLabel1 = new javax.swing.JLabel();
+        txtCPF = new javax.swing.JTextField();
+        txtMes = new javax.swing.JTextField();
+        txtAno = new javax.swing.JTextField();
+        btnCriar = new javax.swing.JButton();
+        lblCliente = new javax.swing.JLabel();
+        lblPeriodo = new javax.swing.JLabel();
 
-        // Número da fatura
-        c.gridx = 0; c.gridy = row;
-        painel.add(new JLabel("Número da Fatura:"), c);
-        txtNumero = new JTextField();
-        c.gridx = 1;
-        painel.add(txtNumero, c);
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabelaItens = new javax.swing.JTable();
 
-        // Cliente
-        row++;
-        c.gridx = 0; c.gridy = row;
-        painel.add(new JLabel("Cliente:"), c);
-        comboCliente = new JComboBox<>();
-        c.gridx = 1;
-        painel.add(comboCliente, c);
+        jLabel2 = new javax.swing.JLabel();
+        txtCodigoItem = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtQuantidade = new javax.swing.JTextField();
+        btnAdicionar = new javax.swing.JButton();
 
-        // Mês
-        row++;
-        c.gridx = 0; c.gridy = row;
-        painel.add(new JLabel("Mês:"), c);
+        lblTotal = new javax.swing.JLabel();
 
-        comboMes = new JComboBox<>();
-        String[] meses = new DateFormatSymbols(new Locale("pt", "BR")).getMonths();
-        for (int i = 0; i < 12; i++) comboMes.addItem(meses[i]);
-        c.gridx = 1;
-        painel.add(comboMes, c);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Gerar Fatura");
 
-        // Ano
-        row++;
-        int anoAtual = LocalDate.now().getYear();
-        Integer[] anos = IntStream.rangeClosed(2000, anoAtual).boxed().toArray(Integer[]::new);
+        jLabel1.setText("CPF Cliente:");
 
-        c.gridx = 0; c.gridy = row;
-        painel.add(new JLabel("Ano:"), c);
-        comboAno = new JComboBox<>(anos);
-        comboAno.setSelectedItem(anoAtual);
-        c.gridx = 1;
-        painel.add(comboAno, c);
+        jLabel2.setText("Código do Item:");
+        jLabel3.setText("Quantidade:");
 
-        // Item para selecionar
-        row++;
-        c.gridx = 0; c.gridy = row;
-        painel.add(new JLabel("Selecionar Item:"), c);
+        btnCriar.setText("Criar Fatura");
+        btnCriar.addActionListener(evt -> criarFatura());
 
-        comboItem = new JComboBox<>();
-        c.gridx = 1;
-        painel.add(comboItem, c);
+        btnAdicionar.setText("Adicionar Item");
+        btnAdicionar.addActionListener(evt -> adicionarItem());
 
-        // Lista visual dos itens selecionados
-        row++;
-        c.gridx = 0; c.gridy = row;
-        painel.add(new JLabel("Itens Selecionados:"), c);
+        tabelaItens.setModel(new javax.swing.table.DefaultTableModel(
+                new Object[][]{},
+                new String[]{
+                    "Item", "Qtd", "Preço", "Subtotal"
+                }
+        ));
+        jScrollPane1.setViewportView(tabelaItens);
 
-        listaItensSelecionados = new JList<>(itensSelecionadosModel);
-        listaItensSelecionados.setVisibleRowCount(5);
-        JScrollPane scroll = new JScrollPane(listaItensSelecionados);
+        lblCliente.setText("Cliente: -");
+        lblPeriodo.setText("Período: - ");
+        lblTotal.setText("Total: R$ 0,00");
 
-        c.gridx = 1;
-        painel.add(scroll, c);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
 
-        // Botões de ação
-        row++;
-        JPanel botoes = new JPanel(new GridLayout(1, 4, 8, 8));
-        JButton btnCriar = new JButton("Criar Fatura");
-        JButton btnAddItem = new JButton("Adicionar Item");
-        JButton btnBuscar = new JButton("Buscar Fatura");
-        JButton btnListar = new JButton("Listar Faturas");
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(lblCliente)
+                    .addComponent(lblPeriodo)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(10)
+                        .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20)
+                        .addComponent(txtMes, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10)
+                        .addComponent(txtAno, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20)
+                        .addComponent(btnCriar))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 520, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(10)
+                        .addComponent(txtCodigoItem, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20)
+                        .addComponent(jLabel3)
+                        .addGap(10)
+                        .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(20)
+                        .addComponent(btnAdicionar))
+                    .addComponent(lblTotal))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
 
-        botoes.add(btnCriar);
-        botoes.add(btnAddItem);
-        botoes.add(btnBuscar);
-        botoes.add(btnListar);
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(20)
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(jLabel1)
+                    .addComponent(txtCPF, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMes, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtAno, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCriar))
+                .addGap(10)
+                .addComponent(lblCliente)
+                .addComponent(lblPeriodo)
+                .addGap(10)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15)
+                .addGroup(layout.createParallelGroup()
+                    .addComponent(jLabel2)
+                    .addComponent(txtCodigoItem, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtQuantidade, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAdicionar))
+                .addGap(20)
+                .addComponent(lblTotal)
+                .addGap(20))
+        );
 
-        c.gridx = 0; c.gridy = row; c.gridwidth = 2;
-        painel.add(botoes, c);
-        c.gridwidth = 1;
-
-        add(painel, BorderLayout.NORTH);
-
-        txtSaida = new JTextArea();
-        txtSaida.setEditable(false);
-        add(new JScrollPane(txtSaida), BorderLayout.CENTER);
-
-        // Ações
-        btnCriar.addActionListener(e -> criarFatura());
-        btnAddItem.addActionListener(e -> adicionarItemAction());
-        btnBuscar.addActionListener(e -> buscarFaturaAction());
-        btnListar.addActionListener(e -> listarFaturasNaSaida());
+        pack();
+        setLocationRelativeTo(null);
     }
 
-    private void carregarClientes() {
-        comboCliente.removeAllItems();
-        List<Cliente> clientes = clienteController.listar();
-        for (Cliente c : clientes) {
-            comboCliente.addItem(c.getId() + " - " + c.getNome());
-        }
-    }
 
-    private void carregarItems() {
-        comboItem.removeAllItems();
-        List<Item> itens = itemController.listar();
-        for (Item it : itens) {
-            comboItem.addItem(it.getId() + " - " + it.getNome());
-        }
-    }
-
-    private void adicionarItemAction() {
-        try {
-            if (comboItem.getSelectedItem() == null) {
-                JOptionPane.showMessageDialog(this, "Selecione um item.");
-                return;
-            }
-
-            String itemStr = comboItem.getSelectedItem().toString();
-            int idItem = Integer.parseInt(itemStr.split(" - ")[0]);
-            Item item = itemController.buscar(idItem);
-
-            itensSelecionados.add(item);
-            itensSelecionadosModel.addElement(
-                    item.getId() + " - " + item.getNome() + " (Qtd: " + item.getQuantidade() + ")"
-            );
-
-            JOptionPane.showMessageDialog(this, "Item adicionado!");
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao adicionar item: " + ex.getMessage());
-        }
-    }
 
     private void criarFatura() {
         try {
-            int numero = Integer.parseInt(txtNumero.getText());
+            String cpf = txtCPF.getText();
+            String mes = txtMes.getText();
+            String ano = txtAno.getText();
 
-            String cliStr = comboCliente.getSelectedItem().toString();
-            int idCliente = Integer.parseInt(cliStr.split(" - ")[0]);
-            Cliente cliente = clienteController.buscar(idCliente);
+            faturaAtual = faturaController.criarFatura(cpf, mes, ano);
 
-            String mes = comboMes.getSelectedItem().toString();
-            int ano = Integer.parseInt(comboAno.getSelectedItem().toString());
+            lblCliente.setText("Cliente: " + faturaAtual.getCliente().getNome());
+            lblPeriodo.setText("Período: " + mes + "/" + ano);
+            atualizarTabela();
 
-            faturaController.criarFatura(
-                    numero,
-                    cliente,
-                    ano,
-                    mes,
-                    new ArrayList<>(itensSelecionados)
-            );
+            JOptionPane.showMessageDialog(this, "Fatura criada com sucesso!");
 
-            JOptionPane.showMessageDialog(this, "Fatura criada!");
-
-            itensSelecionados.clear();
-            itensSelecionadosModel.clear();
-
-            listarFaturasNaSaida();
-
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }
 
-    private void buscarFaturaAction() {
+    private void adicionarItem() {
         try {
-            int numero = Integer.parseInt(txtNumero.getText());
-            Fatura f = faturaController.buscar(numero);
+            int codigo = Integer.parseInt(txtCodigoItem.getText());
+            int quantidade = Integer.parseInt(txtQuantidade.getText());
 
-            if (f == null) {
-                txtSaida.setText("Fatura não encontrada.");
-                return;
-            }
+            faturaController.adicionarItem(faturaAtual, codigo, quantidade);
 
-            mostrarFatura(f);
+            atualizarTabela();
+            lblTotal.setText("Total: R$ " + faturaAtual.calcularTotal());
 
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Erro ao buscar fatura.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro: " + e.getMessage());
         }
     }
 
-    private void listarFaturasNaSaida() {
-        List<Fatura> faturas = faturaController.listar();
-        StringBuilder sb = new StringBuilder();
+    private void atualizarTabela() {
+        DefaultTableModel model = (DefaultTableModel) tabelaItens.getModel();
+        model.setRowCount(0);
 
-        for (Fatura f : faturas) {
-            sb.append("Fatura Nº ").append(f.getNumero())
-              .append(" | Cliente: ").append(f.getCliente() != null ? f.getCliente().getId() + " - " + f.getCliente().getNome() : "N/A")
-              .append(" | Mês/Ano: ").append(f.getMes()).append("/").append(f.getAno())
-              .append(" | Total: ").append(f.calcularTotal())
-              .append("\n");
+        if (faturaAtual == null) return;
+
+        for (ItemFatura it : faturaAtual.getItens()) {
+            model.addRow(new Object[]{
+                it.getItem().getNome(),
+                it.getQuantidade(),
+                it.getItem().getPreco(),
+                it.calcularSubtotal()
+            });
         }
-
-        txtSaida.setText(sb.toString());
     }
 
-    private void mostrarFatura(Fatura f) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("=== DETALHES DA FATURA ===\n\n");
+    // Declaração dos componentes  
+    private javax.swing.JButton btnCriar;
+    private javax.swing.JButton btnAdicionar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane1;
 
-        sb.append("Número: ").append(f.getNumero()).append("\n");
-        sb.append("Cliente: ").append(f.getCliente().getId())
-          .append(" - ").append(f.getCliente().getNome()).append("\n");
-        sb.append("Referência: ").append(f.getMes()).append("/").append(f.getAno()).append("\n");
-        sb.append("Total da Fatura: ").append(f.calcularTotal()).append("\n\n");
+    private javax.swing.JLabel lblCliente;
+    private javax.swing.JLabel lblPeriodo;
+    private javax.swing.JLabel lblTotal;
 
-        sb.append("Itens da Fatura:\n");
+    private javax.swing.JTable tabelaItens;
 
-        for (var calc : f.getItens()) {
-            Item it = (Item) calc;
-
-            sb.append("ID: ").append(it.getId())
-              .append(" | Nome: ").append(it.getNome())
-              .append(" | Quantidade: ").append(it.getQuantidade())
-              .append(" | Valor Unit.: ").append(it.getPreco())
-              .append(" | Total Item: ").append(it.calcularTotal())
-              .append("\n");
-        }
-
-        txtSaida.setText(sb.toString());
-    }
-
+    private javax.swing.JTextField txtCPF;
+    private javax.swing.JTextField txtMes;
+    private javax.swing.JTextField txtAno;
+    private javax.swing.JTextField txtCodigoItem;
+    private javax.swing.JTextField txtQuantidade;
 }

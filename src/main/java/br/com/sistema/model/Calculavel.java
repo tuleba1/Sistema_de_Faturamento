@@ -9,5 +9,5 @@ package br.com.sistema.model;
  * @author tulio
  */
 public interface Calculavel {
-    double calcularTotal();
+    double calcularSubtotal();
 }

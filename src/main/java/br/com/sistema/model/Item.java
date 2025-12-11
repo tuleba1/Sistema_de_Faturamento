@@ -1,65 +1,92 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.sistema.model;
 
-import br.com.sistema.exception.CampoInvalidoException;
-
-
 /**
- *
- * @author tulio
+ * Modelo Item com validação simples.
  */
-public class Item extends EntidadeBase implements Calculavel {
+public class Item {
 
+    private int id;
     private String nome;
-    private double valor;
-    private int quantidade;
+    private double preco;
 
-  public Item(String nome, int quantidade, double valor) {
+    public Item() {
+    }
+
+    public Item(int id, String nome, double preco) {
+        this.id = id;
         this.nome = nome;
-        this.quantidade = quantidade;
-        this.valor = valor;
+        this.preco = preco;
     }
 
-    public Item(int id, String nome, double valor, int quantidade) {
-        this.setId(id);
+    public Item(String nome, double preco) {
         this.nome = nome;
-        this.valor = valor;
-        this.quantidade = quantidade;
+        this.preco = preco;
     }
 
-    @Override
-    public double calcularTotal() {
-        return valor * quantidade;
+    // -----------------------
+    // GETTERS / SETTERS
+    // -----------------------
+    public int getId() {
+        return id;
     }
 
-    @Override
-    public void validar() throws CampoInvalidoException {
-        if (nome == null || nome.isBlank()) {
-            throw new CampoInvalidoException("Nome do item é obrigatório.");
-        }
-        if (quantidade <= 0) {
-            throw new CampoInvalidoException("A quantidade deve ser maior que zero.");
-        }
-        if (valor <= 0) {
-            throw new CampoInvalidoException("O preço deve ser maior que zero.");
-        }
+    public void setId(int id) {
+        this.id = id;
     }
 
+    public String getNome() {
+        return nome;
+    }
 
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
-    public double getPreco() { return valor; }
-    public void setPreco(double preco) { this.valor = preco;}
+    public double getPreco() {
+        return preco;
+    }
 
-    public int getQuantidade() { return quantidade; }
-    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
+    public void setPreco(double preco) {
+        this.preco = preco;
+    }
+
+    // -----------------------
+    // VALIDAÇÃO
+    // -----------------------
+    /**
+     * Valida os campos do item.
+     *
+     * Regras aplicadas:
+     * - nome não pode ser nulo ou vazio
+     * - preco não pode ser negativo
+     *
+     * @throws Exception com mensagem descritiva caso a validação falhe
+     */
+    public void validar() throws Exception {
+        if (this.nome == null || this.nome.trim().isEmpty()) {
+            throw new Exception("Nome do item é obrigatório.");
+        }
+
+        // opcional: verificar tamanho mínimo/máximo do nome
+        if (this.nome.trim().length() < 2) {
+            throw new Exception("Nome do item deve ter ao menos 2 caracteres.");
+        }
+
+        if (Double.isNaN(this.preco) || Double.isInfinite(this.preco)) {
+            throw new Exception("Preço do item inválido.");
+        }
+
+        if (this.preco < 0) {
+            throw new Exception("Preço não pode ser negativo.");
+        }
+    }
 
     @Override
     public String toString() {
-        return getId() + " - " + nome + " (Qtd: " + quantidade + ", Preço: " + valor + ")";
+        return "Item{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", preco=" + preco +
+                '}';
     }
 }

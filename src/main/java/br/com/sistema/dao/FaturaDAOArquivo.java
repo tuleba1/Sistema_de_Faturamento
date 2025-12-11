@@ -1,37 +1,55 @@
 package br.com.sistema.dao;
 
 import br.com.sistema.model.Fatura;
-import br.com.sistema.model.Item;
 import br.com.sistema.model.Cliente;
+import br.com.sistema.model.Item;
+import br.com.sistema.model.ItemFatura;
+import br.com.sistema.service.ClienteService;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class FaturaDAOArquivo implements FaturaDAO {
 
     private final String nomeArquivo;
+    private final ClienteService clienteService;
+    private final ItemDAO itemDAO;
 
-    public FaturaDAOArquivo(String nomeArquivo) {
+    public FaturaDAOArquivo(String nomeArquivo, ClienteService clienteService, ItemDAO itemDAO) {
         this.nomeArquivo = nomeArquivo;
+        this.clienteService = clienteService;
+        this.itemDAO = itemDAO;
     }
 
     private void salvarNoArquivo(List<Fatura> faturas) {
         try (PrintWriter pw = new PrintWriter(new FileWriter(nomeArquivo))) {
 
             for (Fatura f : faturas) {
+                StringBuilder itensStr = new StringBuilder();
 
-                StringBuilder itens = new StringBuilder();
-                for (var item : f.getItens()) {
-                    itens.append(((Item)item).getId()).append(",");
+             
+                if (f.getItens() != null && !f.getItens().isEmpty()) {
+                    for (ItemFatura itf : f.getItens()) {
+                        if (itf != null && itf.getItem() != null) {
+                            itensStr.append(itf.getItem().getId())
+                                    .append(":")
+                                    .append(itf.getQuantidade())
+                                    .append("|");
+                        }
+                    }
+                    // remove último '|'
+                    if (itensStr.length() > 0) itensStr.setLength(itensStr.length() - 1);
                 }
 
+          
                 pw.println(
-                    f.getNumero() + ";" +
-                    f.getCliente().getId() + ";" +
-                    f.getMes() + ";" +
-                    f.getAno() + ";" +
-                    itens
+                        f.getId() + ";" +
+                        (f.getCliente() != null ? f.getCliente().getId() : "") + ";" +
+                        (f.getMes() != null ? f.getMes() : "") + ";" +
+                        (f.getAno() != null ? f.getAno() : "") + ";" +
+                        itensStr.toString()
                 );
             }
 
@@ -50,19 +68,79 @@ public class FaturaDAOArquivo implements FaturaDAO {
             String linha;
 
             while ((linha = br.readLine()) != null) {
-                String[] dados = linha.split(";");
+                if (linha.trim().isEmpty()) continue;
 
-                int numero = Integer.parseInt(dados[0]);
-                int clienteId = Integer.parseInt(dados[1]);
-                String mes = dados[2];
-                int ano = Integer.parseInt(dados[3]);
+                String[] dados = linha.split(";", -1); 
 
-                Cliente cliente = new Cliente("","","","","", java.time.LocalDate.now());
-                cliente.setId(clienteId);
+                if (dados.length < 5) {
+                    System.err.println("Linha inválida (campos insuficientes): " + linha);
+                    continue;
+                }
 
-                Fatura f = new Fatura(numero, cliente, mes, ano);
+                try {
+                    int numero = Integer.parseInt(dados[0].trim());
+                    String clienteIdStr = dados[1].trim();
+                    String mes = dados[2].trim();
+                    String ano = dados[3].trim();
+                    String itensRaw = dados[4].trim();
 
-                lista.add(f);
+                 
+                    Cliente cliente = null;
+                    if (!clienteIdStr.isEmpty()) {
+                        try {
+                            int clienteId = Integer.parseInt(clienteIdStr);
+                            cliente = clienteService.buscarPorId(clienteId);
+                        } catch (NumberFormatException nfe) {
+                            System.err.println("ID de cliente inválido na fatura " + numero + ": " + clienteIdStr);
+                        }
+                    }
+
+                    if (cliente == null) {
+                        System.err.println("Cliente não encontrado (fatura " + numero + "), fatura ignorada.");
+                        continue;
+                    }
+
+               
+                    Fatura f = new Fatura();
+                    f.setId(numero);
+                    f.setCliente(cliente);
+                    f.setMes(mes);
+                    f.setAno(ano);
+
+     
+                    if (!itensRaw.isEmpty()) {
+                        String[] partes = itensRaw.split("\\|");
+                        for (String p : partes) {
+                            if (p.trim().isEmpty()) continue;
+                            String[] it = p.split(":");
+                            if (it.length != 2) {
+                                System.err.println("Formato de item inválido na fatura " + numero + ": " + p);
+                                continue;
+                            }
+                            try {
+                                int itemId = Integer.parseInt(it[0].trim());
+                                int quantidade = Integer.parseInt(it[1].trim());
+
+                                Item item = itemDAO.buscarPorId(itemId);
+                                if (item == null) {
+                                    System.err.println("Item ID " + itemId + " não encontrado (fatura " + numero + "). Item ignorado.");
+                                    continue;
+                                }
+
+                                ItemFatura itf = new ItemFatura(item, quantidade);
+                                f.adicionarItem(itf);
+
+                            } catch (NumberFormatException nfe) {
+                                System.err.println("Número inválido ao parsear item na fatura " + numero + ": " + p);
+                            }
+                        }
+                    }
+
+                    lista.add(f);
+
+                } catch (NumberFormatException ex) {
+                    System.err.println("Número inválido no registro de fatura: " + linha);
+                }
             }
 
         } catch (Exception e) {
@@ -75,14 +153,23 @@ public class FaturaDAOArquivo implements FaturaDAO {
     @Override
     public void salvar(Fatura f) {
         List<Fatura> lista = carregarArquivo();
-        lista.add(f);
+        // se já existir fatura com mesmo id, atualiza; senão adiciona
+        boolean atualizado = false;
+        for (int i = 0; i < lista.size(); i++) {
+            if (lista.get(i).getId() == f.getId()) {
+                lista.set(i, f);
+                atualizado = true;
+                break;
+            }
+        }
+        if (!atualizado) lista.add(f);
         salvarNoArquivo(lista);
     }
 
     @Override
     public Fatura buscarPorNumero(int numero) {
         return carregarArquivo().stream()
-                .filter(f -> f.getNumero() == numero)
+                .filter(f -> f.getId() == numero)
                 .findFirst()
                 .orElse(null);
     }
@@ -95,8 +182,8 @@ public class FaturaDAOArquivo implements FaturaDAO {
     @Override
     public boolean remover(int numero) {
         List<Fatura> lista = carregarArquivo();
-        boolean ok = lista.removeIf(f -> f.getNumero() == numero);
-        salvarNoArquivo(lista);
+        boolean ok = lista.removeIf(f -> f.getId() == numero);
+        if (ok) salvarNoArquivo(lista);
         return ok;
     }
 }

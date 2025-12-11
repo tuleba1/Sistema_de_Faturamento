@@ -1,16 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.sistema.dao;
 
 import br.com.sistema.model.Item;
+import java.util.List;
 
-/**
- *
- * @author tulio
- */
-public interface ItemDAO extends DAO<Item> {
-    
+public interface ItemDAO {
+    void salvar(Item entidade);
+    Item buscarPorId(int id);
+    List<Item> buscarTodos();
+    void atualizar(Item entidade);
+    void remover(int id);
 }
-

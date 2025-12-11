@@ -1,68 +1,82 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package br.com.sistema.controller;
 
 import br.com.sistema.model.Cliente;
-import br.com.sistema.service.ClienteService;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- *
- * @author tulio
- */
+
 public class ClienteController {
-    
-    private ClienteService clienteService;
-    
-    public ClienteController(ClienteService service){
-        this.clienteService = service;
-    }
-    
-    public void cadastrar(
-            String nome,
-            String email,
-            String endereco,
-            String estado,
-            String paisNascimento,
-            LocalDate dataNascimento
-    )
-            throws Exception{
-        Cliente cliente = new Cliente(
-                nome,
-        email,
-        endereco,
-        estado,
-        paisNascimento,
-        dataNascimento);
-        
-        clienteService.cadastrarCliente(cliente);
-        
-    }
-    
-    public List<Cliente> listar(){
-        return clienteService.listarClientes();
-    }
-    
-    public Cliente buscar(int id){
-        return clienteService.buscarPorId(id);
-    }
-    
-    public void atualizar(Cliente cliente) throws Exception {
-        clienteService.atualizarCliente(cliente);
-    }
-    
-    public void deletar(int id) {
-        clienteService.deletarCliente(id);
+
+    private final List<Cliente> clientes = new ArrayList<>();
+    private final AtomicInteger proxId = new AtomicInteger(1);
+
+    public ClienteController() {
+     
     }
 
-    public void criar(Cliente cliente) throws Exception{
-        if (cliente == null){
-            throw new Exception("Cliente não pode ser nulo.");
+   
+    public Cliente cadastrar(String nome, String email, String endereco, String cpf, LocalDate dataNascimento) throws Exception {
+        Cliente c = new Cliente(nome, email, endereco, cpf, dataNascimento);
+    
+        c.validar();
+
+
+        Cliente existente = buscarPorCPF(cpf);
+        if (existente != null) {
+            throw new Exception("Já existe cliente cadastrado com este CPF.");
         }
-        
-        clienteService.cadastrarCliente(cliente);
+
+  
+        c.setId(proxId.getAndIncrement());
+        clientes.add(c);
+
+        return c;
+    }
+
+    public Cliente buscarPorCPF(String cpf) {
+        if (cpf == null) return null;
+        String cleaned = cpf.replaceAll("\\D", "");
+        for (Cliente c : clientes) {
+            if (c.getCpf() != null && c.getCpf().replaceAll("\\D", "").equals(cleaned)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Cliente buscarPorId(int id) {
+        for (Cliente c : clientes) {
+            if (c.getId() == id) return c;
+        }
+        return null;
+    }
+
+    public List<Cliente> listarTodos() {
+        return new ArrayList<>(clientes);
+    }
+
+    public void removerPorId(int id) {
+        clientes.removeIf(c -> c.getId() == id);
+    }
+
+    public void atualizar(Cliente cliente) throws Exception {
+        if (cliente == null) throw new Exception("Cliente inválido.");
+        cliente.validar();
+
+        for (int i = 0; i < clientes.size(); i++) {
+            if (clientes.get(i).getId() == cliente.getId()) {
+
+                Cliente porCpf = buscarPorCPF(cliente.getCpf());
+                if (porCpf != null && porCpf.getId() != cliente.getId()) {
+                    throw new Exception("Outro cliente já utiliza este CPF.");
+                }
+                clientes.set(i, cliente);
+                return;
+            }
+        }
+        throw new Exception("Cliente não encontrado para atualizar.");
     }
 }
