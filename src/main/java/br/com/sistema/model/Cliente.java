@@ -30,6 +30,7 @@ public class Cliente {
         this.dataNascimento = dataNascimento;
     }
 
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -48,40 +49,35 @@ public class Cliente {
     public LocalDate getDataNascimento() { return dataNascimento; }
     public void setDataNascimento(LocalDate dataNascimento) { this.dataNascimento = dataNascimento; }
 
-   
+
     public void validar() throws Exception {
-        if (this.nome == null || this.nome.trim().isEmpty()) {
+
+        if (nome == null || nome.trim().isEmpty()) {
             throw new Exception("Nome é obrigatório.");
         }
-        if (this.cpf == null || this.cpf.trim().isEmpty()) {
+
+        if (cpf == null || cpf.trim().isEmpty()) {
             throw new Exception("CPF é obrigatório.");
         }
-        
-        String cpfDigits = this.cpf.replaceAll("\\D", "");
-        if (cpfDigits.length() < 11) {
-            throw new Exception("CPF inválido (precisa de 11 dígitos).");
+
+        String cpfDigits = cpf.replaceAll("\\D", "");
+        if (cpfDigits.length() != 11) {
+            throw new Exception("CPF inválido (precisa ter 11 dígitos).");
         }
-    
-        if (this.email != null && !this.email.trim().isEmpty()) {
-            if (!this.email.contains("@") || !this.email.contains(".")) {
-                throw new Exception("Email com formato inválido.");
+
+        if (email != null && !email.trim().isEmpty()) {
+            if (!email.contains("@") || !email.contains(".")) {
+                throw new Exception("Email inválido.");
             }
         }
-      
-        if (this.dataNascimento != null && this.dataNascimento.isAfter(LocalDate.now())) {
-            throw new Exception("Data de nascimento inválida.");
+
+        if (dataNascimento != null && dataNascimento.isAfter(LocalDate.now())) {
+            throw new Exception("Data de nascimento não pode ser no futuro.");
         }
     }
 
     @Override
     public String toString() {
-        return "Cliente{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", cpf='" + cpf + '\'' +
-                ", email='" + email + '\'' +
-                ", endereco='" + endereco + '\'' +
-                ", dataNascimento=" + dataNascimento +
-                '}';
+        return nome + " (CPF: " + cpf + ")";
     }
 }

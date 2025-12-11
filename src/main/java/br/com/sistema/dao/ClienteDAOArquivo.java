@@ -25,7 +25,7 @@ public class ClienteDAOArquivo implements ClienteDAO {
                         c.getEmail() + ";" +
                         c.getEndereco() + ";" +
                         c.getCpf() + ";" +
-                        c.getDataNascimento()  // formato ISO yyyy-MM-dd
+                        c.getDataNascimento()  
                 );
             }
 
@@ -34,7 +34,7 @@ public class ClienteDAOArquivo implements ClienteDAO {
         }
     }
 
-    // ---------- CARREGAR ARQUIVO ----------
+   
     private List<Cliente> carregarArquivo() {
         List<Cliente> lista = new ArrayList<>();
 
@@ -48,7 +48,7 @@ public class ClienteDAOArquivo implements ClienteDAO {
             while ((linha = br.readLine()) != null) {
                 String[] dados = linha.split(";");
 
-                if (dados.length < 6) continue; // proteção
+                if (dados.length < 6) continue; 
 
                 String nome = dados[1];
                 String email = dados[2];

@@ -4,6 +4,7 @@ br\com\sistema\dao\ClienteDAOArquivo.class
 br\com\sistema\model\Calculavel.class
 br\com\sistema\view\TelaCliente.class
 br\com\sistema\model\Fatura.class
+br\com\sistema\view\TelaListagens.class
 br\com\sistema\model\EntidadeBase.class
 br\com\sistema\view\TelaPrincipal.class
 br\com\sistema\model\ItemFatura.class

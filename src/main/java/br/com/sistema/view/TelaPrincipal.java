@@ -14,17 +14,17 @@ public class TelaPrincipal extends JFrame {
 
     public TelaPrincipal() {
 
-       
-        // -------------------------
-        clienteController = new ClienteController();   
-        itemController = new ItemController();         
+        clienteController = new ClienteController();
+        itemController = new ItemController();
         faturaController = new FaturaController(clienteController, itemController);
 
-        // -------------------------
-        // INTERFACE PRINCIPAL
-        // -------------------------
+        clienteController.carregarDoArquivo();
+        itemController.carregarDoArquivo();
+        faturaController.carregarDoArquivo();
+
+   
         setTitle("Sistema de Faturamento");
-        setSize(400, 250);
+        setSize(400, 350);
         setLayout(null);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -38,6 +38,10 @@ public class TelaPrincipal extends JFrame {
         JButton btnFatura = new JButton("Faturas");
         btnFatura.setBounds(120, 120, 150, 30);
 
+        JButton btnListagens = new JButton("Listagens");
+        btnListagens.setBounds(120, 170, 150, 30);
+
+
         btnCliente.addActionListener(e ->
                 new TelaCliente(clienteController).setVisible(true)
         );
@@ -50,12 +54,18 @@ public class TelaPrincipal extends JFrame {
                 new TelaFatura(clienteController, itemController, faturaController).setVisible(true)
         );
 
+        btnListagens.addActionListener(e ->
+                new TelaListagens().setVisible(true)
+        );
+
+    
         add(btnCliente);
         add(btnItem);
         add(btnFatura);
+        add(btnListagens);
     }
 
     public static void main(String[] args) {
-        new TelaPrincipal().setVisible(true);
+        SwingUtilities.invokeLater(() -> new TelaPrincipal().setVisible(true));
     }
 }

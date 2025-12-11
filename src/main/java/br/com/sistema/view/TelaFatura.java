@@ -192,7 +192,7 @@ public class TelaFatura extends javax.swing.JFrame {
         }
     }
 
-    // Declaração dos componentes  
+
     private javax.swing.JButton btnCriar;
     private javax.swing.JButton btnAdicionar;
     private javax.swing.JLabel jLabel1;

@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package br.com.sistema.dao;
 
 import br.com.sistema.dao.DAO;
@@ -9,10 +6,7 @@ import br.com.sistema.model.EntidadeBase;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author tulio
- */
+
 public abstract class AbstractDAOArrayList<T extends EntidadeBase> implements DAO<T> {
 
     protected final List<T> lista = new ArrayList<>();

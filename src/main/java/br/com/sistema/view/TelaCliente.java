@@ -15,7 +15,7 @@ public class TelaCliente extends JFrame {
     private JTextField txtEmail;
     private JTextField txtEndereco;
     private JTextField txtCpf;
-    private JTextField txtDataNascimento; // formato yyyy-MM-dd
+    private JTextField txtDataNascimento; 
 
     public TelaCliente(ClienteController controller) {
         this.controller = controller;
@@ -26,7 +26,7 @@ public class TelaCliente extends JFrame {
         setLayout(new GridLayout(7, 2, 5, 5));
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // ---- Campos ----
+  
         add(new JLabel("Nome:"));
         txtNome = new JTextField();
         add(txtNome);

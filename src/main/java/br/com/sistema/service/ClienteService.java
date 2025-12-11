@@ -19,7 +19,6 @@ public class ClienteService {
     public void cadastrarCliente(Cliente cliente) throws Exception {
         cliente.validar();
 
-        // Evitar CPF duplicado
         for (Cliente c : clientes) {
             if (c.getCpf().equals(cliente.getCpf())) {
                 throw new Exception("CPF já cadastrado.");
@@ -80,7 +79,7 @@ public class ClienteService {
                         c.getEmail(),
                         c.getEndereco(),
                         c.getCpf(),
-                        c.getDataNascimento().toString() // formato ISO
+                        c.getDataNascimento().toString() 
                 );
                 linhas.add(linha);
             }
@@ -102,14 +101,14 @@ public class ClienteService {
                 if (partes.length < 6) continue;
 
                 Cliente c = new Cliente(
-                        partes[1],               // nome
-                        partes[2],               // email
-                        partes[3],               // endereco
-                        partes[4],               // cpf
-                        LocalDate.parse(partes[5]) // data nascimento
+                        partes[1],               
+                        partes[2],               
+                        partes[3],               
+                        partes[4],               
+                        LocalDate.parse(partes[5]) 
                 );
 
-                c.setId(Integer.parseInt(partes[0])); // id
+                c.setId(Integer.parseInt(partes[0])); 
                 clientes.add(c);
             }
 

@@ -26,7 +26,6 @@ public class FaturaService {
         return faturaDAO.remover(numero);
     }
 
-    // AGORA FUNCIONA: adicionar item COM QUANTIDADE
     public void adicionarItem(int numero, Item item, int quantidade) {
         Fatura f = faturaDAO.buscarPorNumero(numero);
 

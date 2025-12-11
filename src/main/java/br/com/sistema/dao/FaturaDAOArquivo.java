@@ -39,7 +39,7 @@ public class FaturaDAOArquivo implements FaturaDAO {
                                     .append("|");
                         }
                     }
-                    // remove último '|'
+                    
                     if (itensStr.length() > 0) itensStr.setLength(itensStr.length() - 1);
                 }
 
@@ -153,7 +153,7 @@ public class FaturaDAOArquivo implements FaturaDAO {
     @Override
     public void salvar(Fatura f) {
         List<Fatura> lista = carregarArquivo();
-        // se já existir fatura com mesmo id, atualiza; senão adiciona
+        
         boolean atualizado = false;
         for (int i = 0; i < lista.size(); i++) {
             if (lista.get(i).getId() == f.getId()) {
